@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "pyeventbus"
+version = "0.1.0"
+description = "Event bus implementation for Python"
+authors = ["Álvaro Torres Cogollo <atorrescogollo@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+keywords = ["eventbus", "event", "bus", "python"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Communications :: Event Driven",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.342"
+pylint = "^3.0.3"
+pytest = "^7.4.3"
+black = "^23.12.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
