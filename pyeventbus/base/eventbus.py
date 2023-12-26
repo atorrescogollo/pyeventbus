@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Callable, cast
 
-from pyeventbus.domain_event import DomainEvent
-from pyeventbus.eventbus_exceptions import (
+from pyeventbus.base.domain_event import DomainEvent
+from pyeventbus.base.eventbus_exceptions import (
     HandlerAlreadySubscribedError,
     HandlerNotSubscribedError,
 )

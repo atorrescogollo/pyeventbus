@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 
 import pytest
 
-from pyeventbus.domain_event import DomainEvent
-from pyeventbus.eventbus import EventBus
+from pyeventbus.base.domain_event import DomainEvent
+from pyeventbus.base.eventbus import EventBus
 
 
 @dataclass
@@ -38,6 +38,13 @@ class DemoEvent1(DomainEvent):
 
     value1: int
 
+    def to_dict(self) -> dict[str, str]:
+        return {"value1": str(self.value1)}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, str]) -> "DemoEvent1":
+        return cls(int(data["value1"]))
+
 
 @dataclass
 class DemoEvent2(DomainEvent):
@@ -46,6 +53,13 @@ class DemoEvent2(DomainEvent):
     """
 
     value2: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {"value2": self.value2}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, str]) -> "DemoEvent2":
+        return cls(data["value2"])
 
 
 @dataclass

@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python for Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - name: Install poetry
+        run: |
+          python -m pip install -U poetry pip
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: "poetry"
+      - name: Install dependencies
+        run: |
+          poetry install -n
+
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-type: python
+
+      - name: Build package
+        if: steps.release.outputs.release_created == 'true'
+        run: |
+          poetry build
+
+      # https://docs.pypi.org/trusted-publishers/using-a-publisher/
+      - name: Publish package distributions to PyPI
+        if: steps.release.outputs.release_created == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
