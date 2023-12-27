@@ -24,7 +24,7 @@ jobs:
       - uses: google-github-actions/release-please-action@v4
         if: |
           github.event_name != 'workflow_dispatch' ||
-          inputs.pypi_release_only == 'true'
+          inputs.pypi_release_only != 'true'
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
