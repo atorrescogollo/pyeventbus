@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/atorrescogollo/pyeventbus/compare/v0.1.4...v0.1.5) (2023-12-27)
+
+
+### Bug Fixes
+
+* Release issues ([96470a1](https://github.com/atorrescogollo/pyeventbus/commit/96470a13ad17c9f86f445224ffeff92817243e37))
+
 ## 0.1.4 (2023-12-27)
 
 
