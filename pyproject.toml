@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python3-eventbus"
-version = "0.1.3"
+version = "0.1.6"
 description = "Event bus implementation for Python"
 authors = ["Álvaro Torres Cogollo <atorrescogollo@gmail.com>"]
 readme = "README.md"
