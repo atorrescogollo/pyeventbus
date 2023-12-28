@@ -153,3 +153,31 @@ def test_call_handler(eventbus: DemoEventBus) -> None:
 
     assert handler1.calls == [1], "Handler1 is not called"
     assert handler2.calls == ["1", "a"], "Handler2 is not called"
+
+
+def test_build_event(eventbus: DemoEventBus) -> None:
+    """
+    Test that we can build an event from its name and its initialization parameters.
+    """
+    _handler1 = Handler1(eventbus)  # Register handler
+
+    assert eventbus.build_event_from_subscriptions(
+        "DemoEvent1",
+        {
+            "value1": "10",
+        },
+    ) == DemoEvent1(10), "Unexpected event"
+
+    assert (
+        eventbus.build_event_from_subscriptions(
+            "CustomEventNotRegistered",
+            {},
+        )
+        is None
+    ), "Unexpected event"
+
+    with pytest.raises(KeyError):  # Can't build an event with those parameters
+        eventbus.build_event_from_subscriptions(
+            "DemoEvent1",
+            {},
+        )

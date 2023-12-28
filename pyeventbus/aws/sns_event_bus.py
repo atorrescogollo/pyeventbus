@@ -2,6 +2,7 @@
 Module for SNS event bus.
 """
 import json
+import logging
 import typing
 from dataclasses import dataclass
 
@@ -11,6 +12,8 @@ from pyeventbus.base.eventbus import EventBus
 SNSTopic = typing.Any
 if typing.TYPE_CHECKING:
     from mypy_boto3_sns.service_resource import Topic as SNSTopic
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -22,6 +25,7 @@ class SNSEventBus(EventBus):
     sns_topic: SNSTopic
 
     def publish(self, event: DomainEvent) -> None:
+        logger.debug("Publishing event %s to SNS topic %s", event, self.sns_topic)
         self.sns_topic.publish(
             Message=json.dumps(
                 {
@@ -30,16 +34,3 @@ class SNSEventBus(EventBus):
                 }
             ),
         )
-
-    def build_event_from_subscriptions(
-        self, event_type: str, event: dict[str, str]
-    ) -> DomainEvent | None:
-        """
-        Return an event knowing its name and its initialization parameters. This
-        avoid having to manually create a lot of if/else statements to build the
-        right event when an unknown event is received.
-        """
-        for event_cls in self.subscriptions:
-            if event_cls.__name__ == event_type:
-                return event_cls.from_dict(event)
-        return None

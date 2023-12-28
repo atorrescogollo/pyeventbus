@@ -1,6 +1,7 @@
 """
 Module for the EventBus class.
 """
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Callable, cast
@@ -10,6 +11,8 @@ from pyeventbus.base.eventbus_exceptions import (
     HandlerAlreadySubscribedError,
     HandlerNotSubscribedError,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,6 +42,12 @@ class EventBus(ABC):
         """
         Subscribes a handler to an event.
         """
+        logger.debug(
+            "Subscribing handler %s to event %s with callback %s",
+            handler_cls,
+            event_cls,
+            callback,
+        )
         domain_event = cast(type[DomainEvent], event_cls)
         domain_event_callback = cast(Callable[[DomainEvent], Any], callback)
         if handler_cls in self.subscriptions.get(domain_event, {}):
@@ -54,6 +63,7 @@ class EventBus(ABC):
         """
         Calls a handler for an event.
         """
+        logger.debug("Calling handler %s for event %s", handler_cls, event)
         callback = self.subscriptions.get(type(event), {}).get(handler_cls, None)
         if callback is None:
             raise HandlerNotSubscribedError(
@@ -66,3 +76,18 @@ class EventBus(ABC):
         Returns the handlers for an event.
         """
         return list(self.subscriptions.get(event_cls, {}).keys())
+
+    def build_event_from_subscriptions(
+        self, event_type: str, event: dict[str, str]
+    ) -> DomainEvent | None:
+        """
+        Return an event knowing its name and its initialization parameters. This
+        avoid having to manually create a lot of if/else statements to build the
+        right event when an unknown event is received.
+        """
+        logger.debug("Building event %s from subscriptions", event_type)
+        for event_cls in self.subscriptions:
+            if event_cls.__name__ == event_type:
+                logger.debug("Building event %s from subscriptions", event_type)
+                return event_cls.from_dict(event)
+        return None
