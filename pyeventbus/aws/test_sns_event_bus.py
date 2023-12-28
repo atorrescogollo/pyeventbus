@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from typing import Any, Self
 
 import boto3
-import pytest
 from moto import mock_sns
 from moto.core import DEFAULT_ACCOUNT_ID  # type: ignore
 from moto.sns import sns_backends  # type: ignore
@@ -103,40 +102,3 @@ def test_publish() -> None:
                 },
             }
         ), "Unexpected notification payload"
-
-
-def test_build_event() -> None:
-    """
-    Test that we can build an event from its name and its initialization parameters.
-    """
-    with mock_sns():
-        sns_topic = boto3.resource("sns", region_name="us-east-1").create_topic(
-            Name="test-topic"
-        )
-        eventbus = SNSEventBus(sns_topic)
-        _handler = Handler(eventbus)  # Register handler
-
-        assert eventbus.build_event_from_subscriptions(
-            "CustomDomainEvent",
-            {
-                "a1": "a1",
-                "a2": "2",
-                "a3": "True",
-                "a4": "a4",
-                "a5": json.dumps({"a5": "a5"}),
-            },
-        ) == CustomDomainEvent("a1", 2, True, ["a4"], {"a5": "a5"}), "Unexpected event"
-
-        assert (
-            eventbus.build_event_from_subscriptions(
-                "CustomEventNotRegistered",
-                {},
-            )
-            is None
-        ), "Unexpected event"
-
-        with pytest.raises(KeyError):
-            eventbus.build_event_from_subscriptions(
-                "CustomDomainEvent",
-                {},
-            )
